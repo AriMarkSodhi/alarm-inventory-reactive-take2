@@ -1,5 +1,4 @@
 # alarminventory-reactive
-reactive version of alarm inventory - nginx, mongo, spring
 
 The intent of this exercise is to use Spring boot to explore exposing an alarm model; alarm definitions,
 alarm instances and the resources that they are raised by via a reactive REST API. Resource represent
@@ -32,19 +31,36 @@ The technology being explored includes:
 - Mongodb
   - Spring annotations for Mongo persistent collections or alarms, alarm definitions and resources.
   - reactive mongo -  Spring repository using template delegation vs. repository inheritance
-  - Mongo docker image
+  - Mongo docker image build in this project from latest mongo image via maven
+- Nginx  - front ending the REST APIs acting as an API GW
+  - load balance
+  - rate limit - Ratelimiters using different strategies.
+       - per client Request Rate limit - max num requests per time interval - fixed, sliding
+          - request/sec
+          - request/min
+          - request/hr
+          - request/day
+       - Concurrent Rate limit - max num concurrent requests at same time
+       - Priority Based Rate limit - portion of bw reserved for hi-priority
+       - utilization based rate limit - final type to prevent overload - based on priority - critical, posts, gets, tests
+   - nginx image built in this project from latest nginx image via maven 
+
 - Docker - importing, building and activating/deactivating images via docker and docker-compose. This is ok
   for experimentation on a single host, but a container orchestration engine like kubernetes is needed for
-  dynamically scaling  production deployments.
+  dynamically scaling  production deployments. Assumed to be pre-installed. 
 - Swagger/OpenAPI - embed documentation
 - Traceability, Profiling using AOP
 
-The application has two docker images:
+The application has three docker images all built via this project:
 - the alarm REST API
+- Nginx
 - Mongodb
 and a test client. Right now the application bootstraps the database. Only the alarm definitions
 and the alarm instances are modeled. The resources will be a separate REST controller and
 docker image.
+
+Nginx will act as an API gateway for one or more services behind it. Each service has its own
+database, but share a common mongodb server for now.
 
 There are two ways to run this system - using docker-compose or docker directly.
 
