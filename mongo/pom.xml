@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.ari</groupId>
+    <artifactId>mongodb</artifactId>
+    <version>latest</version>
+    <packaging>jar</packaging>
+
+    <name>mongodb</name>
+    <description>mongodb</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <!-- Name of Docker image that will be built. -->
+        <docker.image.name>mongodb</docker.image.name>
+        <!--
+            Directory that holds Docker file and static content
+            necessary to build the Docker image.
+        -->
+        <docker.image.src.root>src/main/resources/docker</docker.image.src.root>
+        <!--
+            Directory to which the Docker image artifacts and the Docker
+            file will be copied to and which will serve as the root directory
+            when building the Docker image.
+        -->
+        <docker.build.directory>${project.build.directory}/docker</docker.build.directory>
+    </properties>
+
+    <dependencies>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.13</version>
+                <executions>
+                    <execution>
+                        <id>remove-image</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>removeImage</goal>
+                        </goals>
+                        <configuration>
+                            <imageName>${docker.image.name}</imageName>
+                            <imageTags>
+                                <imageTag>${project.version}</imageTag>
+                            </imageTags>
+                            <verbose>true</verbose>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.4</version>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <contextDirectory>.</contextDirectory>
+                    <writeTestMetadata>false</writeTestMetadata>
+                    <dockerInfoDirectory></dockerInfoDirectory>
+                    <verbose>true</verbose>
+                    <forceCreation>true</forceCreation>
+                    <imageName>${docker.image.name}</imageName>
+                    <repository>${docker.image.name}</repository>
+                    <tag>${project.version}</tag>
+                    <forceTags>true</forceTags>
+                    <pullNewerImage>false</pullNewerImage>
+                    <imageTags>
+                        <imageTag>${project.version}</imageTag>
+                    </imageTags>
+                    <dockerDirectory>./</dockerDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
+        </project>

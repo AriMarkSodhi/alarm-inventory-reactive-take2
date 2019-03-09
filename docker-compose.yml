@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+
+  alarminvdb:
+    image: mongodb:latest
+    container_name: mongodb
+    volumes:
+      - /Users/asodhi/data/mongodb:/data/db
+    ports:
+      - "27017:27017"
+    restart: always
+
+  alarminvrest:
+    image: alarminv:0.0.1-SNAPSHOT
+    container_name: alarminvrest
+    links:
+      - "alarminvdb:mongodb"
+    ports:
+      - "8090:8090"
+    depends_on:
+      - "alarminvdb"
+    restart: always
+    environment:
+      - MONGODB_URI=mongodb://alarminvdb:27017/test
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+    - /Users/asodhi/data/mongodb:/data/db
+    ports:
+    - "80:80"
+    - "443:443"
+    depends_on:
+    - "alarminvrest"
+    restart: always
