@@ -6,6 +6,7 @@
     <groupId>com.ari</groupId>
     <artifactId>alarm-inv-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <!-- mark this as a parent project - no artifacts produced here - see sub modules for artifacts -->
     <packaging>pom</packaging>
 
     <name>alarm-inventory-reactive-parent</name>
