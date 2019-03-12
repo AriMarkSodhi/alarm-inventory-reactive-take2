@@ -4,6 +4,8 @@ import com.ari.msexp1.mongoDAL.model.Alarm;
 import com.ari.msexp1.mongoDAL.model.AlarmStatusChange;
 import com.ari.msexp1.mongoDAL.model.OperatorStateChange;
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,13 +14,18 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public class AlarmDALImpl implements AlarmDAL {
+    private static final Logger logger = LoggerFactory.getLogger(AlarmDALImpl.class);
+    public static final String COLLECTION_NAME = "alarm";
     private final ReactiveMongoTemplate reactiveMongoTemplate;
     @Autowired
     public AlarmDALImpl(ReactiveMongoTemplate reactiveMongoTemplate) {
@@ -26,22 +33,32 @@ public class AlarmDALImpl implements AlarmDAL {
     }
     @Override
     public Mono<Alarm> save(Mono<Alarm> alarmMono) {
-        return Mono.from(alarmMono).doOnNext(alarm -> reactiveMongoTemplate.save(alarm));
+        return Mono.from(alarmMono).doOnNext(alarm -> reactiveMongoTemplate.save(alarm).block());
     }
     @Override
     public Flux<Alarm> save(Publisher<Alarm> alarmPublisher) {
-        return Flux.from(alarmPublisher).doOnNext(alarm -> reactiveMongoTemplate.save(alarm));
+        List<Alarm> alarmList = new ArrayList<>();
+        Flux.from(alarmPublisher).subscribe(
+                alarm -> {
+                    alarmList.add(reactiveMongoTemplate.save(alarm).block());
+                },
+                err -> logger.error("Alarm received error"+ err), //--> onError
+                () -> logger.info("Alarm got Completed event")    //--> onComplete
+        );
+        return Flux.fromIterable(alarmList);
+
+    //    return Flux.from(alarmPublisher).doOnNext(alarm -> reactiveMongoTemplate.save(alarm));
     }
     @Override
     public Flux<Alarm> findAll() {
-        return reactiveMongoTemplate.findAll(Alarm.class);
+        return reactiveMongoTemplate.findAll(Alarm.class, COLLECTION_NAME);
     }
     @Override
     public Flux<Alarm> findAll(Pageable pageable) {
         Query query = new Query();
         query.skip(pageable.getPageNumber() * pageable.getPageSize());
         query.limit(pageable.getPageSize());
-        return reactiveMongoTemplate.find(query, Alarm.class);
+        return reactiveMongoTemplate.find(query, Alarm.class, COLLECTION_NAME);
     }
     @Override
     public Flux<Alarm> getAllAlarmByDefnPaginated(String alarmTypeId, String alarmTypeQualifier,
@@ -60,7 +77,7 @@ public class AlarmDALImpl implements AlarmDAL {
         Query query = new Query();
         query.skip(pageable.getPageNumber() * pageable.getPageSize());
         query.limit(pageable.getPageSize());
-        return reactiveMongoTemplate.find(query, Alarm.class);
+        return reactiveMongoTemplate.find(query, Alarm.class, COLLECTION_NAME);
     }
 
     @Override
@@ -71,7 +88,7 @@ public class AlarmDALImpl implements AlarmDAL {
         query.addCriteria(Criteria.where("isCleared").ne(Boolean.TRUE));
         query.with(new Sort(Direction.DESC, "perceivedSeverity")).with(new Sort(Direction.DESC, "timeCreated")).with(new Sort(Direction.ASC,"resource"));
 
-        return reactiveMongoTemplate.find(query, Alarm.class);
+        return reactiveMongoTemplate.find(query, Alarm.class, COLLECTION_NAME);
     }
 
     @Override
@@ -83,55 +100,55 @@ public class AlarmDALImpl implements AlarmDAL {
         query.addCriteria(Criteria.where("isCleared").ne(Boolean.TRUE));
         query.with(new Sort(Direction.DESC, "perceivedSeverity")).with(new Sort(Direction.DESC, "timeCreated")).with(new Sort(Direction.ASC,"resource"));
 
-        return reactiveMongoTemplate.find(query, Alarm.class);
+        return reactiveMongoTemplate.find(query, Alarm.class, COLLECTION_NAME);
     }
 
     @Override
     public Mono<Alarm> findOneById(String alarmId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("name").is(alarmId));
-        return reactiveMongoTemplate.findOne(query, Alarm.class);
+        return reactiveMongoTemplate.findOne(query, Alarm.class, COLLECTION_NAME);
     }
     @Override
     public Mono<Alarm> findOneByName(String name) {
         Query query = new Query();
         query.addCriteria(Criteria.where("name").is(name));
-        return reactiveMongoTemplate.findOne(query, Alarm.class);
+        return reactiveMongoTemplate.findOne(query, Alarm.class, COLLECTION_NAME);
     }
     @Override
     public Flux<Alarm> findByName(String name) {
         Query query = new Query();
         query.addCriteria(Criteria.where("name").is(name));
-        return reactiveMongoTemplate.find(query, Alarm.class);
+        return reactiveMongoTemplate.find(query, Alarm.class, COLLECTION_NAME);
     }
     @Override
     public Flux<Alarm> findByTime(Date date) {
         Query query = new Query();
         query.addCriteria(Criteria.where("timeCreated").gt(date));
-        return reactiveMongoTemplate.find(query, Alarm.class);
+        return reactiveMongoTemplate.find(query, Alarm.class, COLLECTION_NAME);
     }
     @Override
     public Flux<Alarm> findByTimeRange(int lowerBound, int upperBound) {
         Query query = new Query();
         query.addCriteria(Criteria.where("timeCreated").gt(lowerBound)
                 .andOperator(Criteria.where("timeCreated").lt(upperBound)));
-        return reactiveMongoTemplate.find(query, Alarm.class);
+        return reactiveMongoTemplate.find(query, Alarm.class, COLLECTION_NAME);
     }
     @Override
     public Flux<Alarm> findByResource(String resource) {
         Query query = new Query();
         query.addCriteria(Criteria.where("resource").in(resource));
-        return reactiveMongoTemplate.find(query, Alarm.class);
+        return reactiveMongoTemplate.find(query, Alarm.class, COLLECTION_NAME);
     }
     @Override
     public Mono<Alarm> updateOneAlarm(Alarm Alarm) {
-        return reactiveMongoTemplate.save(Alarm);
+        return reactiveMongoTemplate.save(Alarm, COLLECTION_NAME);
     }
     @Override
     public Mono<Alarm> clearAlarm(String alarmId) {
 
         Mono<Alarm> alarm = reactiveMongoTemplate.findOne(
-                Query.query(Criteria.where("id").is(alarmId)), Alarm.class);
+                Query.query(Criteria.where("id").is(alarmId)), Alarm.class, COLLECTION_NAME);
         if (alarm != null) {
             alarm.block().setCleared(Boolean.TRUE);
             alarm.block().setLastChange(new Date());
@@ -143,11 +160,11 @@ public class AlarmDALImpl implements AlarmDAL {
     public Mono<Alarm> updateAlarmStatus(String alarmId, AlarmStatusChange statusChange) {
 
         Mono<Alarm> alarm = reactiveMongoTemplate.findOne(
-                Query.query(Criteria.where("id").is(alarmId)), Alarm.class);
+                Query.query(Criteria.where("id").is(alarmId)), Alarm.class, COLLECTION_NAME);
         if (alarm != null) {
             alarm.block().updateAlarmStatusChanges(statusChange);
             alarm.block().setLastChange(new Date());
-            reactiveMongoTemplate.save(alarm);
+            reactiveMongoTemplate.save(alarm, COLLECTION_NAME);
         }
         return alarm;
     }
@@ -156,11 +173,11 @@ public class AlarmDALImpl implements AlarmDAL {
     public Mono<Alarm> updateOperatorState(String alarmId, OperatorStateChange statusChange) {
 
         Mono<Alarm> alarm = reactiveMongoTemplate.findOne(
-                Query.query(Criteria.where("id").is(alarmId)), Alarm.class);
+                Query.query(Criteria.where("id").is(alarmId)), Alarm.class, COLLECTION_NAME);
         if (alarm != null) {
             alarm.block().updateOperatorStateChanges(statusChange);
             alarm.block().setLastChange(new Date());
-            reactiveMongoTemplate.save(alarm);
+            reactiveMongoTemplate.save(alarm, COLLECTION_NAME);
         }
         return alarm;
     }
@@ -168,6 +185,6 @@ public class AlarmDALImpl implements AlarmDAL {
 
     @Override
     public void deleteAlarm(Alarm Alarm) {
-        reactiveMongoTemplate.remove(Alarm);
+        reactiveMongoTemplate.remove(Alarm, COLLECTION_NAME);
     }
 }

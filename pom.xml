@@ -32,11 +32,18 @@
             </modules>
         </profile>
         <profile>
+            <id>resourceinv</id>
+            <modules>
+                <module>resourceinv</module>
+            </modules>
+        </profile>
+        <profile>
             <id>all</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
+                <module>resourceinv</module>
                 <module>alarminv</module>
                 <module>mongo</module>
                 <module>nginx</module>

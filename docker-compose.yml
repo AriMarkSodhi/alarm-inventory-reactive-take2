@@ -17,21 +17,35 @@ services:
     links:
       - "alarminvdb:mongodb"
     ports:
-      - "8090:8090"
+      - "8090"
     depends_on:
       - "alarminvdb"
     restart: always
     environment:
-      - MONGODB_URI=mongodb://alarminvdb:27017/test
+      - MONGODB_URI=mongodb://alarminvdb:27017/alarmdb
+
+  resourceinvrest:
+    image: resourceinv:0.0.1-SNAPSHOT
+    container_name: resourceinvrest
+    links:
+    - "alarminvdb:mongodb"
+    ports:
+    - "8090"
+    depends_on:
+      - "alarminvdb"
+    restart: always
+    environment:
+    - MONGODB_URI=mongodb://alarminvdb:27017/resourcedb
 
   nginx:
     image: nginx:latest
     container_name: nginx
     volumes:
-    - /Users/asodhi/data/mongodb:/data/db
+    - /Users/asodhi/data/nginx:/data/db
     ports:
     - "80:80"
     - "443:443"
     depends_on:
     - "alarminvrest"
+    - "resourceinvrest"
     restart: always

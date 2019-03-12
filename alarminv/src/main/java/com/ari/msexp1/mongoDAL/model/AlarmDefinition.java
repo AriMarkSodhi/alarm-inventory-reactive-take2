@@ -15,7 +15,7 @@ import java.util.Locale;
 
 import static java.util.Calendar.*;
 
-@Document(collection = "alarminventory")
+@Document(collection = "alarmdefinition")
 @CompoundIndexes({
         @CompoundIndex(name = "uniquealarmdefn", unique = true, def = "{'alarmTypeId' : 1, 'alarmTypeQualifier': 1}")
 })

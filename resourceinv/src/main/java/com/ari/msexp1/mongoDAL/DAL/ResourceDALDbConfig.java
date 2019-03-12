@@ -20,12 +20,12 @@ import java.net.UnknownHostException;
 @EnableAutoConfiguration(exclude={MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 @EnableReactiveMongoRepositories(basePackages = "com.ari.msexp1.mongoDAL")
 @Configuration
-public class AlarmDALDbConfig extends AbstractReactiveMongoConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(AlarmDALDbConfig.class);
+public class ResourceDALDbConfig extends AbstractReactiveMongoConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(ResourceDALDbConfig.class);
 
     @Override
     protected String getDatabaseName() {
-        return "alarmdb";
+        return "resourcedb";
     }
 
     @Override
