@@ -2,9 +2,9 @@
 
 The intent of this exercise is to use Spring boot to explore exposing an alarm model; alarm definitions,
 alarm instances and the resources that they are raised by via a reactive REST API. Resource represent
-device equipment and facilities. These equipment and facilities represent amongst other things
-a device containment model - NE - rack, shelf, slot, port, power supply, sensor. These all have state,
-one of which is alarm state. A resource can be in an alarm state with a given severity.
+device equipment and facilities. They have a containment model. These equipment and facilities represent 
+amongst other things a device containment model - NE - rack, shelf, slot, port, power supply, sensor. These 
+all have state, one of which is alarm state. A resource can be in an alarm state with a given severity.
 
 The alarm definitions will be effectively r/o via the REST API as they are discovered from resources
 that define them and publish instances of them. The alarm instances are published by resources but can
@@ -32,10 +32,10 @@ The technology being explored includes:
   - Spring annotations for Mongo persistent collections or alarms, alarm definitions and resources.
   - reactive mongo -  Spring repository using template delegation vs. repository inheritance
   - Mongo docker image build in this project from latest mongo image via maven
-- Nginx  - front ending the REST APIs acting as an API GW
-  - load balance
+- Nginx  - front ending the REST APIs acting as an API GW to proxy and load balance REST requests to microservices.
+  - load balance/Proxy
   - rate limit - Ratelimiters using different strategies.
-       - per client Request Rate limit - max num requests per time interval - fixed, sliding
+       - per client Request Rate limit - max num requests per time interval (only one supported today) - fixed, sliding
           - request/sec
           - request/min
           - request/hr
@@ -51,39 +51,23 @@ The technology being explored includes:
 - Swagger/OpenAPI - embed documentation
 - Traceability, Profiling using AOP
 
-The application has three docker images all built via this project:
+The application has four docker images all built via this project:
 - the alarm REST API
+- the resource REST API
 - Nginx
 - Mongodb
-and a test client. Right now the application bootstraps the database. Only the alarm definitions
-and the alarm instances are modeled. The resources will be a separate REST controller and
-docker image.
+and a test client. Right now the application bootstraps the database. Only the resources, alarm definitions
+and the alarm instances are modeled. The resources are in a separate REST controller and docker image.
 
 Nginx will act as an API gateway for one or more services behind it. Each service has its own
 database, but share a common mongodb server for now.
 
-There are two ways to run this system - using docker-compose or docker directly.
-
-Run mongo db in docker image
-
-    docker run --rm --network=ms-exp-bridge -p=27017:27017 --name=alarm-inv-mongo
-
-Run docker image with alarm inv app
-
-
-Or use docker-compose
+To run this system - using docker-compose 
 
     docker-compose -f docker-compose.yml
 
-
 to retrieve alarms
 
-   curl -i -X GET "http://localhost:8090/alarminventory/alarmdefinitions"
-   curl -i -X GET "http://localhost:8090/alarminventory/alarms"
-
-
-Run mongo db in docker image
-
-    docker run --rm --network=ms-exp-bridge -p=27017:27017 --name=alarm-inv-mongo
-
-Run docker image with alarm inv app
+   curl -i -X GET "http://localhost:80/alarminventory/alarmdefinitions"
+   curl -i -X GET "http://localhost:80/alarminventory/alarms"
+   curl -i -X GET "http://localhost:80/resourceinventory/resource"
