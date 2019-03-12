@@ -33,7 +33,7 @@ The technology being explored includes:
     - unit and integration tests
 - Mongodb
   - Spring annotations for Mongo persistent collections or alarms, alarm definitions and resources.
-  - reactive mongo -  Spring repository using template delegation vs. repository inheritance
+  - reactive mongo -  Spring repository using reactive template delegation vs. reactive repository inheritance
   - Mongo docker image build in this project from latest mongo image via maven
 - Nginx  - front ending the REST APIs acting as an API GW to proxy and load balance REST requests to microservices.
   - load balance/Proxy
@@ -72,5 +72,7 @@ To run this system - using docker-compose
 to retrieve alarms
 
    curl -i -X GET "http://localhost:80/alarminventory/alarmdefinitions"
+   
    curl -i -X GET "http://localhost:80/alarminventory/alarms"
+   
    curl -i -X GET "http://localhost:80/resourceinventory/resource"
