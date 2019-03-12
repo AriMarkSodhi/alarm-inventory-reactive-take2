@@ -1,5 +1,8 @@
 # alarminventory-reactive
 
+take 2 adds more robustness around reactive approach and a resource microservice - mostly stubbed out for
+now. 
+
 The intent of this exercise is to use Spring boot to explore exposing an alarm model; alarm definitions,
 alarm instances and the resources that they are raised by via a reactive REST API. Resource represent
 device equipment and facilities. They have a containment model. These equipment and facilities represent 
