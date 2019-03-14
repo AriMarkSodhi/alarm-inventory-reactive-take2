@@ -19,8 +19,10 @@ import java.util.List;
 
 @Repository
 public class ResourceDALImpl implements ResourceDAL {
-    public static final String COLLECTION_NAME = "resource";
     private static final Logger logger = LoggerFactory.getLogger(ResourceDALImpl.class);
+    private static final String COLLECTION_NAME = "resource";
+    private static final String NAME = "name";
+    private static final String ID = "id";
     private final ReactiveMongoTemplate reactiveMongoTemplate;
 
     @Autowired
@@ -63,21 +65,21 @@ public class ResourceDALImpl implements ResourceDAL {
     @Override
     public Mono<Resource> findOneById(String resourceId) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("name").is(resourceId));
+        query.addCriteria(Criteria.where(ID).is(resourceId));
         return reactiveMongoTemplate.findOne(query, Resource.class, COLLECTION_NAME);
     }
 
     @Override
     public Mono<Resource> findOneByName(String name) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("name").is(name));
+        query.addCriteria(Criteria.where(NAME).is(name));
         return reactiveMongoTemplate.findOne(query, Resource.class, COLLECTION_NAME);
     }
 
     @Override
     public Flux<Resource> findByName(String name) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("name").is(name));
+        query.addCriteria(Criteria.where(NAME).is(name));
         return reactiveMongoTemplate.find(query, Resource.class, COLLECTION_NAME);
     }
 }

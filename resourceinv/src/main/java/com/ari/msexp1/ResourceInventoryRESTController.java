@@ -17,21 +17,21 @@ public class ResourceInventoryRESTController {
         this.resourceDAL = resourceDAL;
     }
 
-    @GetMapping("/resource")
+    @GetMapping("/resources")
     public Flux<Resource> getResources() {
         return resourceDAL.findAll();
     }
 
-    @GetMapping(value="/resource/{name}")
-    public Flux<Resource> getResource(
-            @RequestParam(value = "name",required=true) @PathVariable("name") String name)
+    @GetMapping(value="/resource")
+    public Mono<Resource> getResource(
+            @RequestParam(value = "name",required=true) String name)
     {
-        return resourceDAL.findByName(name);
+        return resourceDAL.findOneByName(name);
     }
 
     @GetMapping(value="/resource/{id}")
     public Mono<Resource> getResourceById(
-            @RequestParam(value = "id",required=true) @PathVariable("id") String id)
+            @PathVariable("id") String id)
     {
         return resourceDAL.findOneById(id);
     }

@@ -74,15 +74,21 @@ Or use docker-compose
     docker-compose -f docker-compose.yml
 
 
-to retrieve alarms
+to retrieve alarms/resources
 
    curl -i -X GET "http://localhost:8090/alarminventory/alarmdefinitions"
    curl -i -X GET "http://localhost:8090/alarminventory/alarms"
+   curl -i -X GET "http://localhost:80/resourceinventory/resources"
 
+to retrieve by id
 
-Run mongo db in docker image
+   curl -i -X GET "http://localhost:80/alarminventory/alarmdefinition/5c87f32f190494000187b566"
+   curl -i -X GET "http://localhost:80/alarminventory/alarm/Alarm_1"
+   curl -i -X GET "http://localhost:80/resourceinventory/resource/0"
 
-    docker run --rm --network=ms-exp-bridge -p=27017:27017 --name=alarm-inv-mongo
+to retrieve by name
 
-Run docker image with alarm inv app
+   curl -i -X GET "http://localhost:80/alarminventory/alarmdefinition?name=Alarm_0"
+   curl -i -X GET "http://localhost:80/alarminventory/alarm?name=Alarm_0"
+   curl -i -X GET "http://localhost:80/resourceinventory/resource?name=res1"
 

@@ -76,11 +76,23 @@ Or use docker-compose
     docker-compose -f docker-compose.yml
 
 
-to retrieve alarms
+to retrieve alarms/resources
 
    curl -i -X GET "http://localhost:8090/alarminventory/alarmdefinitions"
    curl -i -X GET "http://localhost:8090/alarminventory/alarms"
+   curl -i -X GET "http://localhost:80/resourceinventory/resources"
 
+to retrieve by id
+
+   curl -i -X GET "http://localhost:80/alarminventory/alarmdefinition/5c87f32f190494000187b566"
+   curl -i -X GET "http://localhost:80/alarminventory/alarm/Alarm_1"
+   curl -i -X GET "http://localhost:80/resourceinventory/resource/0"
+
+to retrieve by name
+
+   curl -i -X GET "http://localhost:80/alarminventory/alarmdefinition?name=Alarm_0"
+   curl -i -X GET "http://localhost:80/alarminventory/alarm?name=Alarm_0"
+   curl -i -X GET "http://localhost:80/resourceinventory/resource?name=res1"
 
 Run mongo db in docker image
 

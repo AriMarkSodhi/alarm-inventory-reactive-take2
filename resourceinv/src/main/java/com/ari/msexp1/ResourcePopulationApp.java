@@ -49,7 +49,7 @@ public class ResourcePopulationApp implements CommandLineRunner {
             Flux<Resource> resources = Flux.generate(() -> 0,
                     (i, sink) -> {
                         if (i == 100) sink.complete();
-                        sink.next(new Resource(i.toString(), "res" + 1, (i - 1 > 0) ? i.toString() : "0", new ArrayList<>(), new Date(), "desc",
+                        sink.next(new Resource(i.toString(), "res" + i, (i - 1 > 0) ? i.toString() : "0", new ArrayList<>(), new Date(), "desc",
                                 EquipmentClass.values()[new Random().nextInt(EquipmentClass.values().length)],
                                 1, "rev1", "v1.0", "v1.0", "Mfg", "model",
                                 new Date(new Date().getTime() - (10 * 24 * 60 * 60 * 1000)),

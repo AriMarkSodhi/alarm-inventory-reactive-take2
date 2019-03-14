@@ -26,7 +26,7 @@ public class Resource {
     private String parentId;
     private List<String> childIds;
     private Date timeCreated;
-    private String descriptipn;
+    private String description;
     private EquipmentClass eqType;
     private long physicalIndex;
     private String hwRev;
@@ -46,7 +46,7 @@ public class Resource {
     }
 
     @PersistenceConstructor
-    public Resource(String id, String name, String parentId, List<String> childIds, Date timeCreated, String descriptipn,
+    public Resource(String id, String name, String parentId, List<String> childIds, Date timeCreated, String description,
                     EquipmentClass eqType, long physicalIndex, String hwRev, String firmwareRev, String swRev,
                     String mfgName, String modelName, Date mfgDate, Boolean isFRU, OperatorState operStatus,
                     UsageState usageStatus, AlarmState alarmStatus) {
@@ -55,7 +55,7 @@ public class Resource {
         this.parentId = parentId;
         this.childIds = childIds;
         this.timeCreated = timeCreated;
-        this.descriptipn = descriptipn;
+        this.description = description;
         this.eqType = eqType;
         this.physicalIndex = physicalIndex;
         this.hwRev = hwRev;
@@ -90,8 +90,8 @@ public class Resource {
         return timeCreated;
     }
 
-    public String getDescriptipn() {
-        return descriptipn;
+    public String getDescription() {
+        return description;
     }
 
     public EquipmentClass getEqType() {
@@ -150,7 +150,7 @@ public class Resource {
                 ", parentId='" + parentId + '\'' +
                 ", childIds=" + childIds +
                 ", timeCreated=" + timeCreated +
-                ", descriptipn='" + descriptipn + '\'' +
+                ", description='" + description + '\'' +
                 ", eqType=" + eqType +
                 ", physicalIndex=" + physicalIndex +
                 ", hwRev='" + hwRev + '\'' +

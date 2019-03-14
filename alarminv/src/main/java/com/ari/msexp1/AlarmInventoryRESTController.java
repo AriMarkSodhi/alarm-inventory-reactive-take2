@@ -21,33 +21,40 @@ public class AlarmInventoryRESTController {
         this.alarmDAL = alarmDAL;
     }
 
-    @GetMapping("/alarmdefinition")
+    @GetMapping("/alarmdefinitions")
     public Flux<AlarmDefinition> getAlarmDefinitions() {
         return alarmDefinitionDAL.findAll();
     }
 
-    @GetMapping(value="/alarmdefinition/{id}")
+    @GetMapping(value="/alarmdefinition")
     public Mono<AlarmDefinition> getAlarmDefinition(
-            @RequestParam(value = "id",required=true) @PathVariable("id") String id)
+            @RequestParam(value = "name",required=true) String name)
+    {
+        return alarmDefinitionDAL.findOneByName(name);
+    }
+
+    @GetMapping(value="/alarmdefinition/{id}")
+    public Mono<AlarmDefinition> getAlarmDefinitionById(
+            @PathVariable("id") String id)
     {
         return alarmDefinitionDAL.findOneById(id);
     }
 
-    @GetMapping("/alarm")
+    @GetMapping("/alarms")
     public Flux<Alarm> getAlarms() {
         return alarmDAL.findAll();
     }
 
-    @GetMapping(value="/alarm/{name}")
+    @GetMapping(value="/alarm")
     public Flux<Alarm> getAlarm(
-            @RequestParam(value = "name",required=true) @PathVariable("name") String name)
+            @RequestParam(value = "name",required=true) String name)
     {
         return alarmDAL.findByName(name);
     }
 
     @GetMapping(value="/alarm/{id}")
     public Mono<Alarm> getAlarmById(
-            @RequestParam(value = "id",required=true) @PathVariable("id") String id)
+            @PathVariable("id") String id)
     {
         return alarmDAL.findOneById(id);
     }

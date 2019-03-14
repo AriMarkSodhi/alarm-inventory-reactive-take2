@@ -23,7 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         //  authenticate and authorize
         http.authorizeRequests()
-                .antMatchers("/", "/resourceinventory", "/v2/api-docs", "/swagger*/**")
+                .antMatchers("/", "/resourceinventory/**", "/v2/api-docs", "/swagger*/**")
                 .permitAll()
                 .anyRequest()
                 .permitAll();

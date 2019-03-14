@@ -21,7 +21,10 @@ import java.util.List;
 @Repository
 public class AlarmDefinitionDALImpl implements AlarmDefinitionDAL {
     private static final Logger logger = LoggerFactory.getLogger(AlarmDefinitionDALImpl.class);
-    public static final String COLLECTION_NAME = "alarmdefinition";
+    private static final String COLLECTION_NAME = "alarmdefinition";
+    private static final String NAME = "name";
+    private static final String ALARM_DEFINITION_ID = "alarmDefinitionId";
+    private static final String RESOURCES = "resources";
     private final ReactiveMongoTemplate reactiveMongoTemplate;
 
     @Autowired
@@ -30,7 +33,7 @@ public class AlarmDefinitionDALImpl implements AlarmDefinitionDAL {
     }
     @Override
     public Mono<AlarmDefinition> save(Mono<AlarmDefinition> alarmDefinitionMono) {
-        return Mono.from(alarmDefinitionMono).doOnNext(alarmDefn -> reactiveMongoTemplate.save(alarmDefn, COLLECTION_NAME).block());
+        return Mono.from(alarmDefinitionMono).doOnNext(alarmDefn -> reactiveMongoTemplate.save(alarmDefn, COLLECTION_NAME));
     }
     @Override
     public Flux<AlarmDefinition> save(Publisher<AlarmDefinition> alarmDefinitionPublisher) {
@@ -43,8 +46,6 @@ public class AlarmDefinitionDALImpl implements AlarmDefinitionDAL {
                 () -> logger.info("AlarmDef got Completed event")    //--> onComplete
         );
         return Flux.fromIterable(alarmDefnList);
-
-//        return Flux.from(alarmDefinitionPublisher).doOnNext(alarmDefn -> reactiveMongoTemplate.save(alarmDefn));
     }
     @Override
     public Flux<AlarmDefinition> findAll() {
@@ -61,36 +62,36 @@ public class AlarmDefinitionDALImpl implements AlarmDefinitionDAL {
     @Override
     public Mono<AlarmDefinition> findOneByName(String name) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("name").is(name));
+        query.addCriteria(Criteria.where(NAME).is(name));
         return reactiveMongoTemplate.findOne(query, AlarmDefinition.class, COLLECTION_NAME);
     }
 
     @Override
     public Mono<AlarmDefinition> findOneById(String alarmDefinitionId) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("alarmDefinitionId").is(alarmDefinitionId));
+        query.addCriteria(Criteria.where(ALARM_DEFINITION_ID).is(alarmDefinitionId));
         return reactiveMongoTemplate.findOne(query, AlarmDefinition.class, COLLECTION_NAME);
     }
 
     @Override
     public Flux<AlarmDefinition> findByName(String name) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("name").is(name));
+        query.addCriteria(Criteria.where(NAME).is(name));
         return reactiveMongoTemplate.find(query, AlarmDefinition.class, COLLECTION_NAME);
     }
     @Override
     public Flux<AlarmDefinition> findByResource(String resource) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("resources").in(resource));
+        query.addCriteria(Criteria.where(RESOURCES).in(resource));
         return reactiveMongoTemplate.find(query, AlarmDefinition.class, COLLECTION_NAME);
     }
     @Override
     public Mono<AlarmDefinition> updateOneAlarm(Mono<AlarmDefinition> alarmDefinitionMono) {
-        return Mono.from(alarmDefinitionMono).doOnNext(alarmDefn -> reactiveMongoTemplate.save(alarmDefn, COLLECTION_NAME));
+        return Mono.from(alarmDefinitionMono).doOnNext(alarmDefn -> reactiveMongoTemplate.save(alarmDefn, COLLECTION_NAME).block());
     }
 
     @Override
     public void deleteAlarm(AlarmDefinition Alarm) {
-        reactiveMongoTemplate.remove(Alarm, COLLECTION_NAME);
+        reactiveMongoTemplate.remove(Alarm, COLLECTION_NAME).block();
     }
 }
