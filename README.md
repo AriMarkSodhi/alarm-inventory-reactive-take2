@@ -17,6 +17,11 @@ The intent is to link the resources, alarm definitions, and alarm instances via 
 API following HATEOAS principles. This will enable an alarm client to effectively navigate
 and discover the model at run time.
 
+issues:
+1. flux as a parameter to REST API to create alarm definitions/alarms in bulk throws exception on server side.
+2. lack of proper error codes returned 
+3. client side test cases tbd
+4. need to explore functional approach - router/handler
 
 The technology being explored includes:
 - Spring Boot DI and AOP
